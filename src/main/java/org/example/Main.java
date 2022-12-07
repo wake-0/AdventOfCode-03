@@ -12,24 +12,11 @@ public class Main {
         main.run();
     }
 
-    record Rucksack(String content) {
-
-        String getFirstCompartment() {
-            int length = content.length();
-            return content.substring(0, length / 2);
-        }
-
-        String getSecondCompartment() {
-            int length = content.length();
-            return content.substring(length / 2, length);
-        }
+    record Rucksack(String firstCompartment, String secondCompartment, String thirdCompartment) {
 
         int getValue() {
-            String firstCompartment = this.getFirstCompartment();
-            String secondCompartment = this.getSecondCompartment();
-
             for (char c : firstCompartment.toCharArray()) {
-                if (secondCompartment.indexOf(c) != -1) {
+                if (secondCompartment.indexOf(c) != -1 && thirdCompartment.indexOf(c) != -1) {
                     // Char found
                     int ascii = c;
                     return Character.isUpperCase(c) ? ascii - 65 + 27 : ascii - 97 + 1;
@@ -52,8 +39,26 @@ public class Main {
     void readRucksacks() throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(this.path + "input.txt"))) {
             String line;
+            String first = null;
+            String second = null;
             while ((line = br.readLine()) != null) {
-                rucksacks.add(new Rucksack(line));
+
+                if (first == null) {
+                    first = line;
+                    continue;
+                }
+
+                if (second == null) {
+                    second = line;
+                    continue;
+                }
+
+                Rucksack rucksack = new Rucksack(first, second, line);
+                rucksacks.add(rucksack);
+
+                // reset compartments
+                first = null;
+                second = null;
             }
         }
     }
